@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#\n#  Settings for _20160420_args.R\n#\n\n\n#c_args <- commandArgs(trailingOnly=T)\n\nc_makedataData     <- 'Selevsek_2015_all_Selevsek_20160706.RData'\nc_id.select   <- 'YDL110C_YDR122W'#'YBR230C_YHL021C'#'YBR016W_YMR175W'#'YDL110C_YDR122W'\nc_sampleSize  <- '500'\nc_rdm.err     <- '0.5'\nc_rho.intval  <- '0.05'\n\ndataDirectry   <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Simulation/Permu.test/'\nfuncDirectry   <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Simulation/Permu.test/'\npkgsDirectry   <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Simulation/Permu.test/'\n\nlag.neg.ign <- T\n\nscore4HCA <- 'Qian,2001' \n#'trc_prt_1dim'  or 'Qian,2001'  edited:2015.10.21\n# or 'noHCA' edited:2015.10.28\n\noutputDirectry.prefix      <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Simulation/Permu.test/'\n\nitt_of_permute <- 10\nnboot <- 100\n\n",
+    "created" : 1507861756348.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4188542459",
+    "id" : "3A66ED12",
+    "lastKnownWriteTime" : 1507863380,
+    "last_content_update" : 1507863380922,
+    "path" : "~/Dropbox/Research_project/Time_Delayed_Correlation/Selevsek_2015/Analysis/PG/Simulation/Permu.test/SETTING_simulation_permtest_20160420_args.R",
+    "project_path" : "SETTING_simulation_permtest_20160420_args.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

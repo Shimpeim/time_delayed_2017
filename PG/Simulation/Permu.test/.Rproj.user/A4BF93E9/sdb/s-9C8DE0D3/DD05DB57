@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "result_1 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_1_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_2 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_2_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_3 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_3_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_4 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_4_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_5 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_5_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_6 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_6_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_7 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_7_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_8 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_8_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_9 <- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_9_all_permuted_Rho_Q.val_observed.csv',sep=';')\nresult_10<- read.csv('./Simulation_Result/alpha_error_simulation_permtest_itt__permute_10000_batch_10_all_permuted_Rho_Q.val_observed.csv',sep=';')\n\nresult <- result_1 %>%\n  rbind(result_2) %>%\n  rbind(result_3) %>%\n  rbind(result_4) %>%\n  rbind(result_5) %>%\n  rbind(result_6) %>%\n  rbind(result_7) %>%\n  rbind(result_8) %>%\n  rbind(result_9) %>%\n  rbind(result_10) %>%\n  summarize(\n    pval.pt = sum(Flg_pval.pt),\n    pval.sp = sum(Flg_pval.sp)\n  )",
+    "created" : 1508511673845.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "388007895",
+    "id" : "DD05DB57",
+    "lastKnownWriteTime" : 1508511793,
+    "last_content_update" : 1508511793895,
+    "path" : "~/Dropbox/Research_project/Time_Delayed_Correlation/Selevsek_2015/Analysis/PG/Simulation/Permu.test/Simulation_Result/result_check.R",
+    "project_path" : "Simulation_Result/result_check.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

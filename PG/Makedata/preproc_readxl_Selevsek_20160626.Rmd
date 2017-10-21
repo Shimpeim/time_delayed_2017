@@ -1,0 +1,193 @@
+---
+title: "Application Qian 2001 method on Selevsek 2015 data (Z-normalize by genes)"
+author: "s_morimoto"
+date: "2016/07/01"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+This source code is built under R ver.3.1.2  
+
+You are using  `r R.version.string`  
+
+The transcriptome data are taken in *Lee,2011*, described in *Selevsek,2015*.
+The data has 6 time points(T1~T6), but T6(240[min]) is twice of T5(120[min])
+so discarded from analysis.  
+
+The proteome data has 6 time points.
+This data has T2=15[min] in which timepoint was not taken data in *Lee,2011*.
+To establish consistency to transcriptome data, deleted T2(15[min])data, and
+rename T3 to T2, T4 to T3, and so on.
+
+SETUP parameters
+```{r setting up parameters}
+rm()
+
+dataDirectry   <- "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Data"
+
+dataPath_trc     <- "Gene2011_testResult_final.xlsx" # 
+dataPath_prt     <- "ProtSWATH_testResult_final.xlsx" #  
+
+sheet = 1
+header=TRUE
+
+## filenames of the OUTPUT FILEs
+
+outputDirectry <- "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Data"
+
+dataOutput_trc.prefix     <- "Gene2011_testResult_ana_20160706" # 
+dataOutput_prt.prefix     <- "ProtSWATH_testResult_ana_20160706" #  
+
+file_dataGQ         <- 'dataGQ_20160706.csv'
+
+file_save.image     <- 'Selevsek_Qian_20160706.RData'
+
+```
+
+LOAD PACKAGES
+
+```{r install packages,echo=FALSE}
+
+## avoid the error (source: https://code.google.com/p/rexcel/issues/detail?id=33)
+#options(java.parameters = "-Xmx1000m") 
+
+#install.packages('xlsx')
+#install.packages('readxl')
+#install.packages('data.table')
+#install.packages('kohonen')
+#install.packages('plyr')
+#install.packages('dplyr')
+#install.packages('tidyr')
+#install.packages('pander')
+#install.packages('pspearman')
+#install.packages('SuppDists')
+#install.packages('Kendall')
+#install.packages('stringr')
+
+require('plyr')
+require('dplyr')
+require('tidyr')
+require('xlsx')
+require('readxl')
+require('ggplot2')
+require('reshape2')
+require('pander')
+require('stringr')
+
+panderOptions('table.split.table', 1000)
+panderOptions('table.continues', '')
+
+```
+
+
+
+LOAD DATA
+```{r loading data }
+
+  
+raw_data.trc <- read_excel(
+  sprintf(fmt = '%s/%s',
+          dataDirectry ,
+          dataPath_trc
+          ),
+  sheet,
+  col_names = header,
+  col_types = NULL, 
+  na = "",skip = 0
+  )[ ,2:4] 
+
+raw_data.prt <- read_excel(
+  sprintf(fmt = '%s/%s',
+          dataDirectry ,
+          dataPath_prt
+          ),
+  sheet,
+  col_names = header,
+  col_types = NULL,
+  na = "",skip = 0
+  )[ ,2:4] 
+
+data.trc <- data.frame(Protein=unique(raw_data.trc$Protein),
+                       log2FC=0,
+                       Label='T1-T1'
+                       ) %>%
+  full_join(raw_data.trc) %>%
+  mutate(
+         id=as.character(Protein),
+         var=as.character(Label),
+         val=as.numeric(log2FC),
+         dtname='trc'
+         ) %>%
+  mutate(
+    var = 
+      ifelse(Label=='T1-T1','0min',
+             ifelse(Label=='T2-T1','30min',
+                    ifelse(Label=='T3-T1','60min',
+                           ifelse(Label=='T4-T1','90min',
+                                  ifelse(Label=='T5-T1','120min',
+                                         ifelse(Label=='T6-T1','240min',NA)
+                                         )
+                                  )
+                           )
+                    )
+             )
+    ) %>%
+  dplyr::select(id,var,val,dtname)
+
+data.prt <- data.frame(Protein=unique(raw_data.prt$Protein),
+                       log2FC=0,
+                       Label='T1-T1'
+                       ) %>%
+  full_join(raw_data.prt) %>%
+  mutate(
+         id=as.character(Protein),
+         val=as.numeric(log2FC),
+         dtname='prt'
+         ) %>%
+  mutate(
+    var = 
+      ifelse(Label=='T1-T1','0min',
+             ifelse(Label=='T2-T1','15min',
+                    ifelse(Label=='T3-T1','30min',
+                           ifelse(Label=='T4-T1','60min',
+                                  ifelse(Label=='T5-T1','90min',
+                                         ifelse(Label=='T6-T1','120min',NA)
+                                         )
+                                  )
+                           )
+                    )
+             )
+    ) %>%
+  dplyr::select(id,var,val,dtname)
+```
+
+```{r T1 is 1}
+# This chank is added 2016/7/1
+
+data.trc <- data.trc %>%
+  mutate(val = 2^val)
+
+data.prt <- data.prt %>%
+  mutate(val = 2^val)
+
+```
+
+
+```{r}
+write.xlsx(
+  data.trc,
+  sprintf(fmt = '%s/%s.xlsx',
+  outputDirectry,
+  dataOutput_trc.prefix
+  )
+  )
+
+write.xlsx(
+  data.prt,
+  sprintf(fmt = '%s/%s.xlsx',
+  outputDirectry,
+  dataOutput_prt.prefix
+  )
+  )
+
+```

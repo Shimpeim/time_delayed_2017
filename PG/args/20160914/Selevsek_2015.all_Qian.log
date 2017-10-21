@@ -1,0 +1,564 @@
+> #R --vanilla --quiet < ClustMetTest_20160914.R --args Selevsek_2015_all_Selevsek_20160706.RData             out.setting=F clustering=T ScaleBoot=F  lag.neg.ign=T  Selevsek_2015_id.convert_all.csv             > Selevsek_2015.all_Qian.log 2>&1 &
+> #R --vanilla --quiet < Morimoto_TDC.2016.main_20160707_args.R --args Selevsek_2015_pentose_Selevsek_20160706.RData         out.setting=F clustering=F ScaleBoot=F  lag.neg.ign=T  Selevsek_2015_id.convert_pentose.csv         > Selevsek_2015.pentose_noHCA.log 2>&1 &
+> #R --vanilla --quiet < Morimoto_TDC.2016.main_20160707_args.R --args Selevsek_2015_GlySerThrMetabo_Selevsek_20160706.RData out.setting=F clustering=F ScaleBoot=F  lag.neg.ign=T  Selevsek_2015_id.convert_GlySerThrMetabo.csv > Selevsek_2015.GlySerThrMetabo_noHCA.log 2>&1 &
+> #R --vanilla --quiet < Morimoto_TDC.2016.main_20160707_args.R --args Fournier_2010_all_Fournier_20160123.RData             out.setting=F clustering=F ScaleBoot=F  lag.neg.ign=T  Fournier_2010_id.convert_all.csv             > Fournier_2010.all_Qian.log 2>&1 &
+> 
+> # This source code is built under R ver.3.1.2
+> 
+> c_args <- commandArgs(trailingOnly=T)
+> param.setting     <- c_args[2]
+> param.setting <- 'out.setting=F'
+> eval(parse(text = param.setting))
+> 
+> if(out.setting==T){
++   source(file = sprintf(
++     '%s/%s',
++     '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG',
++     'Morimoto_TDC.2016.setting_20160317_args.R')
++   )
++ }else{
++   c_args <- commandArgs(trailingOnly=T)
++   makedataData     <- c_args[1]
++   c_score4HCA      <- c_args[3]
++   c_ScaleBoot      <- c_args[4]
++   c_lag.neg.ign    <- c_args[5]
++   id.convertData   <- c_args[6]
++   
++   outputDirectry.prefix <- './'
++   dataDirectry <- './'
++   funcDirectry <- './'
++   pkgsDirectry  <- './'
++   }
+> 
+> outprefix      <- sub(".RData", "", makedataData)
+> 
+> print(makedataData)
+[1] "Selevsek_2015_all_Selevsek_20160706.RData"
+> print(c_score4HCA)
+[1] "clustering=T"
+> print(c_ScaleBoot)
+[1] "ScaleBoot=F"
+> print(c_lag.neg.ign)
+[1] "lag.neg.ign=T"
+> print(id.convertData)
+[1] "Selevsek_2015_id.convert_all.csv"
+> 
+> 
+> eval(parse(text = c_score4HCA))
+> eval(parse(text = c_ScaleBoot))
+> eval(parse(text = c_lag.neg.ign))
+> 
+> filter.delay <- c(0,1,2)
+> 
+> #```{r setup for HCA and def bootstrap filter }
+> 
+> z_norm            <- TRUE  # Z-Normalize by genes and datanames before E score calc. ?
+> interTemporal     <- TRUE  # convert data for E score calc. to inter-temporal  ?
+> rho.interTemporal <- FALSE # convert data for corr.Rho calc. to inter-temporal ?
+> 
+> if(clustering==F){score4HCA='noHCA'}else{
++   score4HCA='Qian,2001'
++ }
+> methodHclust <- 'ward.D2'
+>   #'ward.D2'#'correlation'
+> methodDist   <- 'Mahalanobis'
+>   #'euclidean'#'average'
+> 
+> alpha.au  =  0.95
+> alpha.bp  =  0.8
+> nboot     =  10000
+> scaling_r <- c(seq(.5,1.5,by=.1))
+> 
+> #```
+> 
+> #```{r prefix for output files}
+> 
+> histogram.pdf.prefix        <- 'histogram'
+> 
+> HCA_by_delay.pdf.prefix     <- 'HCA_delay'
+> BP_of_edges.csv.prefix      <- 'BP_of_edges_delay'
+> heatmap_by_delay.pdf.prefix <- 'heatmap_delay' 
+> 
+> line_plot.pdf.prefix        <- 'lines_'
+> scat_plot.pdf.prefix        <- 'scatt_'
+> 
+> uniProtAccess.csv.prefix       <- 'high_BP_uniProtAccess'
+> 
+> perm_null_rho_histo.pdf.prefix <- 'permNullDistHisto'
+> permuted_Rho.csv.prefix        <- 'permuted_Rho'
+> 
+> RData_PermRhoAnalysis_save.image.prefix <- 'permuted_Rho'
+> 
+> 
+>  # permuted Rho
+> 
+> itt_of_permute <- 10000
+> 
+> #```
+> 
+> #```{r functions sorce code file}
+> 
+> EscoreCalc <- 'func_for_calcEscore_20160123.R' # modified: 2016/01/23
+> pvclustMod <- 'my.pvclust_20151121.R'
+> permtRho   <- 'func_for_permutest_of_Rho_20160819.R' 
+> dataManu   <- 'OldFunc_20151125.R'
+> #```
+> 
+> 
+> #```{r Load libraries}
+> 
+> ## LIBRARIES
+> rm()
+> 
+> packages <- c(
++   'dplyr', # progress bar
++   'plyr',  # progress bar
++   'dplyr', # progress bar
++   'tidyr',
++   'xlsx',
++   'ggplot2',
++   'gplots',
++   'GMD',
++   'pvclust',
++   'reshape2',
++   'pander',
++   'matrixcalc',
++   'proxy'
++ #  'scaleboot' 
++ #  'biomaRt'
++   ) 
+> 
+> new.packages <-
++   packages[!(packages %in% installed.packages())] 
+>   # installed.packages() returns installed packages 
+> 
+> if(length(new.packages) > 0){ 
++   install.packages(new.packages, repos='http://cran.us.r-project.org')
++ }
+> require('plyr')  # progress bar
+ 要求されたパッケージ plyr をロード中です 
+> require('dplyr') # progress bar
+ 要求されたパッケージ dplyr をロード中です 
+
+ 次のパッケージを付け加えます: ‘dplyr’ 
+
+ 以下のオブジェクトは ‘package:plyr’ からマスクされています: 
+
+     arrange, count, desc, failwith, id, mutate, rename, summarise,
+    summarize 
+
+ 以下のオブジェクトは ‘package:stats’ からマスクされています: 
+
+     filter, lag 
+
+ 以下のオブジェクトは ‘package:base’ からマスクされています: 
+
+     intersect, setdiff, setequal, union 
+
+> require('tidyr')
+ 要求されたパッケージ tidyr をロード中です 
+> require('xlsx')
+ 要求されたパッケージ xlsx をロード中です 
+ 要求されたパッケージ rJava をロード中です 
+ 要求されたパッケージ xlsxjars をロード中です 
+> require('ggplot2')
+ 要求されたパッケージ ggplot2 をロード中です 
+ 警告メッセージ: 
+ パッケージ ‘ggplot2’ はバージョン 3.2.4 の R の下で造られました  
+> require('gplots')
+ 要求されたパッケージ gplots をロード中です 
+
+ 次のパッケージを付け加えます: ‘gplots’ 
+
+ 以下のオブジェクトは ‘package:stats’ からマスクされています: 
+
+     lowess 
+
+> require('GMD')
+ 要求されたパッケージ GMD をロード中です 
+> require('pvclust')
+ 要求されたパッケージ pvclust をロード中です 
+> require('reshape2')
+ 要求されたパッケージ reshape2 をロード中です 
+> require('pander')
+ 要求されたパッケージ pander をロード中です 
+> require('matrixcalc')
+ 要求されたパッケージ matrixcalc をロード中です 
+> require('proxy')
+ 要求されたパッケージ proxy をロード中です 
+
+ 次のパッケージを付け加えます: ‘proxy’ 
+
+ 以下のオブジェクトは ‘package:stats’ からマスクされています: 
+
+     as.dist, dist 
+
+ 以下のオブジェクトは ‘package:base’ からマスクされています: 
+
+     as.matrix 
+
+ 警告メッセージ: 
+ パッケージ ‘proxy’ はバージョン 3.2.5 の R の下で造られました  
+> 
+> if( !("biomaRt" %in% installed.packages()) ){
++   source('http://bioconductor.org/biocLite.R')
++   biocLite( 'biomaRt' )
++   require( 'biomaRt' )
++ }else  require( 'biomaRt' )
+ 要求されたパッケージ biomaRt をロード中です 
+> 
+> if( !("scaleboot" %in% installed.packages()) ){
++   install.packages(
++     sprintf(fmt = '%s%s',
++             pkgsDirectry,
++             "scaleboot_0.3-3.tar.gz"  
++             # ver. 16-May-2010 16:21
++             # https://cran.r-project.org/src/contrib/Archive/scaleboot/
++             ),
++     repos = NULL, type = "source")
++   require( 'scaleboot' )
++ }else require( 'scaleboot' )
+ 要求されたパッケージ scaleboot をロード中です 
+> 
+> #```
+> 
+> 
+> 
+> #Functions for data manupilation
+> #```{r}
+> source(file = sprintf('%s%s',funcDirectry,dataManu)) ## added 2015/11/24 SM
+> ## source code was moved to EscoreCalc
+> #```
+> 
+> #Functions for HCA
+> #```{r}
+> source(file = sprintf('%s%s',funcDirectry,EscoreCalc)) ## added 2015/11/24 SM
+> ## source code was moved to EscoreCalc
+> #```
+> 
+> #Functions for pvclust
+> #```{r}
+> source(file = sprintf('%s%s',funcDirectry,pvclustMod)) ## added 2015/11/24 SM
+> ## source code was moved to pvclustMod
+> # includes 
+> #```
+> 
+> #Functions for Correlation test
+> #```{r}
+> source(file = sprintf('%s%s',funcDirectry,permtRho)) ## added 2015/11/24 SM
+> ## source code was moved to permRho
+> #```
+> 
+> 
+> #```{r Load R_data}
+> 
+> ## LOAD DATA
+> 
+> 
+> getwd()
+[1] "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/args/20160914"
+> 
+> load(
++   paste(
++     dataDirectry,
++     makedataData,
++     sep='')
++   )
+> 
+> #```
+> 
+> #```{r make Z-normalised and time differencial data}
+> 
+> if(z_norm == TRUE){  # added: 2016/01/23
++   data_ana_norm <- data_ana %>%
++     rename(val2=val) %>%
++     group_by(id,dtname) %>%  
++     mutate(val=scale(val2, center = TRUE, scale = TRUE)) %>%
++     dplyr::select(-val2)%>%
++     ungroup()%>%
++     data.frame()
++   attributes(data_ana_norm$val) <- NULL
++     
++   if(interTemporal==TRUE){
++     w.dataGQ <- makeDifData(data_ana_norm %>% spread(key=var,value=val),cols) %>%
++       dplyr::select(id,dtname,starts_with('d_'))
++     timePoint <- timePoint-1
++     }
++   }
+> 
+> dataGQ <- w.dataGQ[duplicated(w.dataGQ$id)|duplicated(w.dataGQ$id,fromLast=TRUE),]
+> 
+> #```
+> 
+> 
+> #```{r classification by delayed time}
+> 
+> w.GQSfled_0 <-  ddply(dataGQ,.(id),gq_method2) %>%
++   dplyr::rename(
++     delayE0=X1,
++     scoreE0=X2,
++     delayD0=X1.1,
++     scoreD0=X2.1
++     )
+> 
+> #```
+> 
+> #```{r histogram }
+> 
+> ftable.delay <- data.frame(
++   ftable(w.GQSfled_0$delayE0)
++   ) %>%
++   mutate(
++     delay=as.numeric(as.character(Var1)),
++     total=sum(Freq),
++     prop=paste(round(Freq/total*100,2),'%',sep=''),
++     prop_num = Freq/total*100
++   )
+> y.ax.break <- seq(0,max(ftable.delay$Freq),floor(max(ftable.delay$Freq)/10))
+> 
+> if(lag.neg.ign==T){  
++   # if lag.neg.ign==T then ignor genes whose lag is less than 0
++   # and hide percentages (not plot 'plot.type2' layer).
++   histo_data <- ggplot(data = ftable.delay %>%
++                          filter(delay>=0),
++                        aes(x=delay,y=as.numeric(Freq),group=prop))
++ }else{
++   histo_data <- ggplot(data = ftable.delay,
++                        aes(x=delay,y=as.numeric(Freq),group=prop))
++ }
+> 
+> plot.type <- geom_bar(stat="identity")
+> plot.type2 <- annotate(
++   "text", 
++   label=ftable.delay$prop, 
++   x=ftable.delay$delay, 
++   y=ftable.delay$Freq+y.ax.break[2]/2, 
++   fontface="italic") 
+> plot.labs <- labs(x='delay (prt to trc)',y='count (genes)')
+> plot.y.axe <- scale_y_continuous(breaks=y.ax.break)
+> plot.x.axe <- scale_x_continuous(breaks=ftable.delay$delay)
+> plot.axe.text <- theme(
++   axis.text.x = element_text(size=25),
++   axis.text.y = element_text(size=15)) 
+> pdf(      
++   sprintf(
++     '%s%s_%s_%s.pdf',
++     outputDirectry.prefix,
++     outprefix,
++     bioproc,
++     histogram.pdf.prefix
++     ) ,
++   width=100,
++   paper='USr'
++   )
+> if(lag.neg.ign==T){
++   plot( histo_data + plot.type + plot.labs + plot.y.axe + plot.x.axe + plot.axe.text)
++ }else{
++   plot( histo_data + plot.type + plot.labs + plot.y.axe + plot.x.axe + plot.type2 + plot.axe.text)
++ }
+> dev.off()
+null device 
+          1 
+> 
+> #```
+> #```{r filtering by time lag}
+> filter.delay.df <- data.frame(delayE0=filter.delay)
+> 
+> w.GQSfled_0 <- w.GQSfled_0 %>%
++   inner_join(filter.delay.df)
+Joining by: "delayE0"
+> GQSfled_0 <- data.frame(ftable(w.GQSfled_0$delayE0)) %>%
++   filter(Freq>2)%>%
++   mutate(delayE0 = as.numeric(as.character(Var1)))%>%
++   dplyr::select(delayE0)%>%
++   inner_join(w.GQSfled_0)
+Joining by: "delayE0"
+>   
+> 
+> mst <- dataGQ %>%
++   filter(id %in% GQSfled_0$id)
+> 
+> #```
+> 
+> #Hieralchical Clustering Analysis 
+> #```{r HCA}
+> 
+> if(ScaleBoot==TRUE){
++   sb.switch <- '.on_'
++ }else{
++   sb.switch <- '.off_'
++ }
+> 
+> if(score4HCA != 'noHCA'){
++   if(score4HCA=='Qian,2001'){
++     GQScoreMat_0 <-  ddply(mst,.(id),gq_scoreMatOut)#,.progress='text')
++     }else
++       {
++         if(score4HCA %in% c('trc_prt_1dim'))
++           GQScoreMat_0 <-  mst %>%
++             filter(dtname =='trc') %>%
++             inner_join( mst %>%
++                           filter(dtname=='prt') %>%
++                           setNames(c(names(.)[1], paste0('prt_',names(.)[-1])))
++                         ,by='id')%>%
++             dplyr::select(-prt_dtname,-dtname)
++         }
++   all_GQSfled_0_delayed <- GQSfled_0 %>%   
++     filter(delayE0>=0)
++   group_by_delay <- unique(all_GQSfled_0_delayed$delayE0)
++   picked_genes <- data.frame()
++   
++   for (delay in group_by_delay){
++     GQSfled_0_delayed <- 
++       all_GQSfled_0_delayed[order(all_GQSfled_0_delayed$scoreE0),] %>%
++       filter(delayE0==delay)
++     mstScoreMat <- GQScoreMat_0 %>%
++       filter(id %in% GQSfled_0_delayed$id)  
++     dimnames(mstScoreMat)[[1]] <- mstScoreMat$id
++     annMstScoreMat <- mstScoreMat[,-1]
++     
++     HCA_Ward <- hclust(
++       dist(annMstScoreMat),
++       method=methodHclust
++       )
++     plot(HCA_Ward,cex = 0.5)
++     
++     pdf(
++       sprintf(
++         '%s%s_%s_%s_delay%s_%s_nboot%s_sb%s_output.pdf',
++         outputDirectry.prefix,
++         outprefix,
++         bioproc,
++         HCA_by_delay.pdf.prefix,
++         delay,
++         score4HCA,
++         nboot,
++         sb.switch
++         ),
++       width=100,
++       paper='USr'
++       )
++   pv <- silent.pvclust(
++     data=t(annMstScoreMat),
++     methodHclust,methodDist,nboot
++     )
++   
++   #++++++ scale boot ++ added in 2015/11/27
++ pv.sb <- sbfit(pv)
++ 
++ 
++ sink(file = sprintf(fmt =
++                       sprintf(
++                         '%s%s_%s_%s_delay%s_%s_nboot%s_sb%s_output.txt',
++                         outputDirectry.prefix,
++                         outprefix,
++                         bioproc,
++                         HCA_by_delay.pdf.prefix,
++                         delay,
++                         score4HCA,
++                         nboot,
++                         sb.switch
++                         )
++                     )
++      )
++ print(summary(pv.sb,k=c(1:3)))
++ sink()
++ 
++ if(ScaleBoot==TRUE){
++   pv  <- sbpvclust(pv, pv.sb)
++ }
++   #++++++ end (added in 2015/11/27)
++ 
++   plot(pv,cex.pv=0.1,lwd=0.5,cex=0.1)
++   for(edges in 1:nrow(pv$edges)){
++      msplot(pv,edges)
++     }
++   pvcl_se <- seplot(pv, identify=TRUE)
++   plot(pv,cex=0.5)
++   dev.off()
++ 
++     pv.picked <- my.pvrect(
++       pv,
++       alpha.au = alpha.au ,
++       alpha.bp = alpha.bp ,
++       pv='bp',
++       type='gt'
++       )
++   if(!is.null(pv.picked$clusters[[1]])){
++     for( i in 1:length(pv.picked$edges)){
++       for( j in 1:length(pv.picked$clusters[[i]])){
++         d.f_ij <-  data.frame(pv.picked$clusters[[i]][j],
++                               pv.picked$edges[[i]],
++                               delay
++                               )
++         picked_genes <- rbind(picked_genes,d.f_ij)
++         }
++       }
++     }
++ 
++   pv_df <- data.frame(pv$edges)
++   write.csv(
++     pv_df, 
++     file=sprintf(
++       '%s%s_%s_%s_delay%s_%s_nboot%s_sb%s.csv',
++       outputDirectry.prefix,
++       outprefix,
++       bioproc,
++       BP_of_edges.csv.prefix,
++       delay,
++       score4HCA,
++       nboot,
++       sb.switch
++       )
++     , col.names=T
++     , quote=F
++     , row.names=T
++   )
++   
++   
++   pdf(sprintf('%s%s_%s_%s_%s_output.pdf',
++               outputDirectry.prefix,
++               outprefix,
++               bioproc,
++               heatmap_by_delay.pdf.prefix,
++               delay
++               ),
++       width=8,
++       height=8
++       )
++   GQScoreHeatmap_0 <-
++     dlply(
++       mst %>% filter(id %in% dimnames(annMstScoreMat)[[1]]), 
++       .(id),
++       gq_scoreMatOut_withName) %>% 
++     llply(my.heatmap.3)
++   dev.off()  
++   }
++   picked_genes <- picked_genes %>%
++     dplyr::rename(id=pv.picked.clusters..i...j., edges=pv.picked.edges..i..) %>%
++     filter(delay %in% filter.delay)
++   
++   }else{ # end:if(score4HCA != 'noHCA')
++     picked_genes <- data.frame()
++     pv.picked <- GQSfled_0 %>%
++       dplyr::select(id,delayE0) %>%
++       dplyr::rename(delay=delayE0) %>%
++       mutate(edges=bioproc) %>%
++       dplyr::select(id,edges,delay)
++     for( i in 1:length(pv.picked$edges)){
++       d.f_ij <-  data.frame(pv.picked$id[[i]],
++                             pv.picked$edges[[i]],
++                             pv.picked$delay[[i]]
++                             )
++       picked_genes <- rbind(picked_genes,d.f_ij)
++       }
++     picked_genes <- picked_genes %>%
++       dplyr::rename(
++         id=pv.picked.id..i.., 
++         edges=pv.picked.edges..i..,
++         delay=pv.picked.delay..i..) %>%
++       filter(delay %in% filter.delay)
++     }
+ dist(t(x), method) でエラー: invalid distance method
+ 呼び出し:  silent.pvclust ... pvclust -> pvclust.nonparallel -> dist.pvclust -> dist
+ 実行が停止されました 

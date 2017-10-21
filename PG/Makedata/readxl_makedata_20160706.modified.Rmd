@@ -1,0 +1,415 @@
+---
+title: "Application Qian 2001 method on Fournier2015 data (Z-normalized by genes)"
+author: "s_morimoto"
+date: "2016/07/06"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+This source code is built under R ver.3.1.2
+
+You are using  `r R.version.string` 
+
+
+
+SETUP parameters
+```{r setting up parameters}
+rm()
+
+##--- setting : data  ##
+dataDirectry   <- "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Data"
+
+dataPath_trc     <- "Gene2011_testResult_ana_20160706.xlsx"
+                    #'Fournier_20151018_trc.xlsx'
+                    #"Gene2011_testResult_ana.xlsx" # 
+dataPath_prt     <- "ProtSWATH_testResult_ana_20160706.xlsx"
+                    #'Fournier_20151018_prt.xlsx'
+                    #"ProtSWATH_testResult_ana.xlsx" # 
+dataPath_pathway <- "2015_Selevsek_proteins_KEGG.xlsx" #  
+bioproc <- 'pentose' #'GlySerThrMetabo' #'pentose'# #NULL#
+
+typeBoolean  <- FALSE
+sheet    = 1
+sheetPathway = 1
+
+header   = TRUE
+
+startRow_trc = 1
+startRow_prt = 1
+startRow_pw  = 1
+
+endRow_trc = 40027 #2296
+endRow_prt = 15535 #2296
+endRow_pw  = 54#54
+
+timePoint <- 5
+repet     <- 1
+
+discrete_x_label <- c('inter-temporal')
+continuous_y_label <- c('0min is 1')
+
+
+cols <- c('0min','30min','60min','90min','120min')
+        #c('min0','min20','min40','min60','min120','min240','min360')
+        #c('T1-T1','T2-T1','T3-T1','T4-T1','T5-T1')
+
+## end of setting : data  ---##
+
+columnName <- c(rep(cols,repet))
+
+## --- setting : data processing before analysis #
+
+z_norm <- FALSE  ## Z-Normalize by genes and datanames ( TRUE/ FALSE)
+interTemporal <- FALSE
+
+## end of setting : data processing before analysis ---##
+
+## --- setting : filenames of the OUTPUT FILEs ##
+
+allOutput.prefix <- 'Selevsek_2015'
+
+outputDirectry <- 
+  "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Output"
+
+file_dataGQ.prefix         <- 'dataGQ_Selevsek_20160706'
+file_data_idConvert.prefix <- 'id.convert'
+file_save.image     <- 'Selevsek_20160706.RData'
+
+## end of setting : filenames of the OUTPUT FILEs ---##
+
+```
+
+```{r BioMart setting}
+
+ # Gene id convert (via bioMart)
+# 
+#bioMartDB      <- "fungi_mart_29" # 2015.10.28 DB update                                     # biomaRt::listMarts()
+#bioMartDataSet <- 'scerevisiae_eg_gene'                     
+#                                  # biomaRt::listDatasets(db)
+#inputName      <- 'wikigene_name'   # 'wikigene_name' or 'ensembl_gene_id' 
+#                                  # biomaRt::listFilters(sceg)
+#outputName     <- 'uniprot_swissprot_accession'
+#                                  # biomaRt::listFilters(sceg)
+
+bioMartHost    <- 'fungi.ensembl.org' # 2015.11.10 updated (HOST='biomart.org' has stopped)
+bioMartDB      <- "fungal_mart" # 2015.11.10 DB update    
+                                  # biomaRt::listMarts(host=bioMartHost)
+bioMartDataSet <- 'scerevisiae_eg_gene'                     
+                                  # biomaRt::listDatasets(db)
+inputName_1      <-  'ensembl_gene_id' # 'wikigene_name' or 'ensembl_gene_id' 
+                                  # biomaRt::listFilters(sceg)
+outputName     <- 'uniprot_swissprot_accession'
+                                  # biomaRt::listFilters(sceg)s
+
+```
+
+```{r functions sorce code file}
+
+funcDirectry <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Functions'
+
+EscoreCalc <- 'func_for_calcEscore_20160123.R'
+
+```
+
+
+LOAD PACKAGES
+
+```{r install packages,echo=FALSE}
+
+## avoid the error (source: https://code.google.com/p/rexcel/issues/detail?id=33)
+#options(java.parameters = "-Xmx1000m") 
+
+
+## LIBRARIES
+rm()
+
+packages <- c(
+  'dplyr', # progress bar
+  'plyr',  # progress bar
+  'dplyr', # progress bar
+  'tidyr',
+  'xlsx',
+  'readxl',
+  'ggplot2',
+  'gplots',
+  'GMD',
+  'pvclust',
+  'reshape2',
+  'pander',
+  'stringr'
+#  'biomaRt'
+  ) 
+
+new.packages <-
+  packages[!(packages %in% installed.packages())] 
+  # installed.packages() returns installed packages 
+
+if(length(new.packages) > 0){ 
+  install.packages(new.packages, repos='http://cran.us.r-project.org')
+}
+require('plyr')  # progress bar
+require('dplyr') # progress bar
+require('tidyr')
+require('xlsx')
+require('readxl')
+require('ggplot2')
+require('gplots')
+require('GMD')
+require('pvclust')
+require('reshape2')
+require('pander')
+require('stringr')
+
+if( !("biomaRt" %in% installed.packages()) ){
+  source('http://bioconductor.org/biocLite.R')
+  biocLite( 'biomaRt' )
+  require( 'biomaRt' )
+}else  require( 'biomaRt' )
+
+#```
+
+panderOptions('table.split.table', 1000)
+panderOptions('table.continues', '')
+
+```
+
+definition of functions
+
+```{r defFUN makeDifData}
+makeDifData <- function(data,var){
+  for (i in 2:length(var)){
+    end   <- var[i]
+    start <- var[i-1]
+    rescol <- paste('d',end,sep='_')
+    ddata  <- data[,end] - data[,start]
+    data[,rescol] <- ddata
+  }
+  return(data)
+  }
+```
+
+
+Qian,Gerstein (J.Mol.Biol.,2001)
+```{r definition of FUNC gq_method}
+
+source(file = sprintf(fmt = '%s/%s',funcDirectry,EscoreCalc))
+
+##--- Example : function gq_method ##
+
+gq_method(c(0,0,0,0,1,1,1,-1,1,1,1,1),c(0,0,0,0,1,1,1,1,1,1,1,-1),4,3,'pos')
+
+gq_method(c(-1.597670,1.722744,1.699152,-2.219394,4.418399,2.081298,4.085573),
+          c(-5.823882,9.529135,-5.602938,2.634425,3.772645,-8.844689,-3.819055),7,1,'neg')
+
+## end of Example : function gq_method ---##
+```
+
+
+LOAD DATA
+```{r loading data }
+
+raw_data.trc <- read_excel(
+  sprintf(fmt = '%s/%s',
+          dataDirectry,
+          dataPath_trc
+          ),
+  sheet,
+  col_names = header,
+  col_types = NULL, 
+  na = "",
+  skip = startRow_trc-1
+  )
+raw_data.prt <- read_excel(
+  sprintf( fmt = '%s/%s',
+           dataDirectry,
+           dataPath_prt), 
+  sheet,
+  col_names = header,
+  col_types = NULL, 
+  na = "",
+  skip = startRow_trc-1
+  )
+```
+
+```{r tranforming data}
+data.trc <- mutate(raw_data.trc,
+                   dtname='trc'
+                   ) %>%
+  dplyr::select(id,var,val,dtname)
+
+data.prt <- mutate(raw_data.prt,
+                   dtname='prt'
+                   ) %>%
+  dplyr::select(id,var,val,dtname)
+
+if (z_norm==TRUE){
+  dataLong <- bind_rows(data.trc,data.prt) %>%
+    rename(val2=val) %>%
+    group_by(id,dtname) %>%  # " dataLong <- as.data.frame(dataLong) "
+    mutate(val=scale(val2, center = TRUE, scale = TRUE)) %>%
+    dplyr::select(-val2)
+}else 
+  dataLong <- bind_rows(data.trc,data.prt) 
+
+attributes(dataLong$val) <- NULL 
+  # attrs are created by scale function which causes errors when this data treated as data.frame
+dataLong <- as.data.frame(dataLong) 
+  # ungroup the BY-groups created by  " %>% group_by(id,dtname)) "
+
+```
+
+
+LOAD gene filtering DATA
+```{r filtering data }
+
+data_ana <- 
+  dataLong
+
+#data_ana$var <- factor(data_ana$var,levels=cols)
+
+if(1-is.null(bioproc)){
+  pathwayData   <- read.xlsx(
+    sprintf(fmt = '%s/%s',
+            dataDirectry,
+            dataPath_pathway),
+    sheetPathway, 
+    header=header,
+    startRow=startRow_pw, 
+    endRow=endRow_pw,
+    colIndex=1:3, dtname='pw') %>%
+    filter(pathway==bioproc) %>%
+    mutate(id=as.character(id),
+           dtname=as.character(dtname),
+           protein=as.character(protein)
+           )
+  data_ana <- inner_join(dataLong,
+                         pathwayData %>% dplyr::select(-dtname)
+                         ,by='id')
+  summ_data_ana <- data_ana %>%
+    group_by(dtname,pathway,var) %>%
+    summarise(
+      n=n(),mean=mean(val),sd=sd(val),
+      min=min(val),median=median(val),max=max(val))
+  pander(summ_data_ana)
+  }else{
+    summ_data_ana <- data_ana %>%
+      group_by(dtname,var) %>%
+      summarise(
+        n=n(),mean=mean(val),sd=sd(val),
+        min=min(val),median=median(val),max=max(val))
+    pander(summ_data_ana)
+    }
+
+```
+
+
+
+```{r making time dif data}
+
+
+w.timePoint <- timePoint
+
+if(interTemporal==TRUE){
+  difdata_ana <- data_ana
+  difdata_ana <- makeDifData(difdata_ana%>%spread(key=var,value=val),cols) %>%
+    dplyr::select(id,dtname,starts_with('d_')
+           ) %>%
+    gather(var,val,starts_with('d_'))
+  data_ana <- difdata_ana
+  timePoint <- timePoint-1
+}
+```
+
+
+```{r}
+
+if(interTemporal==TRUE){
+  dataGQ <- data_ana %>% 
+    spread(key=var,value=val) %>%
+    dplyr::select(id,dtname,starts_with("d_"))
+  }else{
+  dataGQ <- data_ana %>% 
+    spread(key=var,value=val) %>%
+    dplyr::select(id,dtname,one_of(cols))
+  }
+
+write.csv(dataGQ,
+          file=sprintf(fmt = '%s/%s_%s_output.csv',
+                  outputDirectry,
+                  allOutput.prefix,
+                  file_dataGQ.prefix
+                  )
+          )
+
+```
+
+```{r using BioMart}
+
+# "XML content does not seem to be XML:"
+# means "You are not connected to internet"
+
+db.DL <- useMart(bioMartDB,host=bioMartHost) # listMarts(host=bioMartHost)
+sceg <- useDataset(bioMartDataSet, mart = db.DL) # listDatasets(db)
+
+id_convert <- getBM(
+  attributes = c(inputName_1,outputName),
+  filters =  c(inputName_1), # listFilters(sceg)
+  values = dataGQ$id, #
+  mart = sceg
+  )
+id_convert[,'id']    <- id_convert[,inputName_1]
+id_convert[,'uniid'] <- id_convert[,outputName]
+
+if(is.null(bioproc)) bioproc <- 'all'
+write.csv(id_convert %>%
+            dplyr::select(id,uniid),
+          file=sprintf(fmt = '%s/%s_%s_%s.csv',
+                  outputDirectry,
+                  allOutput.prefix,
+                  file_data_idConvert.prefix,
+                  bioproc)
+          )
+```
+
+Qian,Gerstein (J.Mol.Biol.,2001)
+```{r }
+#gq_list_pos <- list()
+#for(i in 1:length(unique(dataGQ$id))){
+#  gene <- unique(dataGQ$id)[i]
+#  data <- dataGQ %>%
+#    filter(id==gene)
+#    if(nrow(data)>=2){
+#      gq_res <-  gq_method(data[1,3:length(data)],
+#                           data[2,3:length(data)],
+#                           timepoint=timePoint,
+#                           rep=repet,'pos')
+#      gq_list_i <- list()
+#      gq_list_i[[1]] <- data
+#      gq_list_i[[2]] <- gq_res
+#      gq_list_pos[[i]] <- gq_list_i
+#      }
+#  }
+#pander(gq_list_pos)
+```
+
+```{r saving RData file}
+if(is.null(bioproc)) bioproc <- 'all'
+  
+save(
+  data_ana,
+  dataGQ,
+  timePoint,
+  repet,
+  bioproc,
+  discrete_x_label,
+  continuous_y_label,
+  cols,
+  gq_method,
+  file = sprintf(fmt = '%s/%s_%s_%s',
+                   outputDirectry,
+                   allOutput.prefix,
+                   bioproc,
+                   file_save.image
+                   )
+     )
+
