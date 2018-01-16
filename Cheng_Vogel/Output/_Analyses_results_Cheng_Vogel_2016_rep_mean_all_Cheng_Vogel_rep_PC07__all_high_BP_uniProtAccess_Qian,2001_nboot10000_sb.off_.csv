@@ -1,0 +1,23 @@
+,id,edges,delay,accession,description,q_value,rho,analysis_res
+1,ENSG00000124635,4,0,HIST1H2BJ,"HIST1H2BJ: 
+histone cluster 1, H2bj [Source:HGNC Symbol;Acc:4761]",0.0173,0.56,"0.56[0.0173]"
+2,ENSG00000136448,4,0,NMT1,"NMT1: 
+N-myristoyltransferase 1 [Source:HGNC Symbol;Acc:7857]",0.0173,0.56,"0.56[0.0173]"
+3,ENSG00000157916,12,0,RER1,"RER1: 
+retention in endoplasmic reticulum sorting receptor 1 [Source:HGNC Symbol;Acc:30309]",0.003,0.87,"0.87[0.0030]"
+4,ENSG00000182481,12,0,KPNA2,"KPNA2: 
+karyopherin alpha 2 (RAG cohort 1, importin alpha 1) [Source:HGNC Symbol;Acc:6395]",0.003,0.87,"0.87[0.0030]"
+5,ENSG00000099812,20,0,MISP,"MISP: 
+mitotic spindle positioning [Source:HGNC Symbol;Acc:27000]",0.003,0.75,"0.75[0.0030]"
+6,ENSG00000111057,20,0,KRT18,"KRT18: 
+keratin 18 [Source:HGNC Symbol;Acc:6430]",0.003,0.75,"0.75[0.0030]"
+7,ENSG00000128422,20,0,KRT17,"KRT17: 
+keratin 17 [Source:HGNC Symbol;Acc:6427]",0.003,0.75,"0.75[0.0030]"
+8,ENSG00000100983,1,2,GSS,"GSS: 
+glutathione synthetase [Source:HGNC Symbol;Acc:4624]",0.9596,-0.55,"-0.55[0.9596]"
+9,ENSG00000175793,1,2,SFN,"SFN: 
+stratifin [Source:HGNC Symbol;Acc:10773]",0.9596,-0.55,"-0.55[0.9596]"
+10,ENSG00000111726,2,2,CMAS,"CMAS: 
+cytidine monophosphate N-acetylneuraminic acid synthetase [Source:HGNC Symbol;Acc:18290]",0.0218,0.66,"0.66[0.0218]"
+11,ENSG00000143870,2,2,PDIA6,"PDIA6: 
+protein disulfide isomerase family A, member 6 [Source:HGNC Symbol;Acc:30168]",0.0218,0.66,"0.66[0.0218]"

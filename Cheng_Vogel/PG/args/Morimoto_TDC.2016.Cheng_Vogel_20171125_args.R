@@ -9,15 +9,11 @@ param.setting     <- c_args[2]
 eval(parse(text = param.setting))
 #out.setting <- T
 if(out.setting==T){
-  source(file = sprintf(
-    '%s/%s',
-    '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG',
-    'Morimoto_TDC.2016.setting_20170424_args.R')
-  )
+  source(file = './Cheng_Vogel/PG/args/out_setting_Cheng_Vogel.R')
 }else{
   c_args <- commandArgs(trailingOnly=T)
   makedataData     <- c_args[1]
-  c_score4HCA      <- c_args[3]
+  c_clustering     <- c_args[3]
   c_ScaleBoot      <- c_args[4]
   c_lag.neg.ign    <- c_args[5]
   id.convertData   <- c_args[6]
@@ -31,13 +27,13 @@ if(out.setting==T){
 outprefix      <- sub(".RData", "", makedataData)
 
 print(makedataData)
-print(c_score4HCA)
+print(c_clustering)
 print(c_ScaleBoot)
 print(c_lag.neg.ign)
 print(id.convertData)
 
 
-eval(parse(text = c_score4HCA))
+eval(parse(text = c_clustering))
 eval(parse(text = c_ScaleBoot))
 eval(parse(text = c_lag.neg.ign))
 
@@ -94,69 +90,15 @@ itt_of_permute <- 10000
 EscoreCalc <- 'func_for_calcEscore_20160123.R' # modified: 2016/01/23
 pvclustMod <- 'my.pvclust_20151121.R'
 permtRho   <- 'func_for_permutest_of_Rho_20160819.R' 
-dataManu   <- 'OldFunc_20151125.R'
+dataManu   <- 'func_data_mnp_20151125.R'
 #```
 
 
 #```{r Load libraries}
 
 ## LIBRARIES
-rm()
-
-packages <- c(
-  'dplyr', # progress bar
-  'plyr',  # progress bar
-  'dplyr', # progress bar
-  'tidyr',
-  'xlsx',
-  'ggplot2',
-  'gplots',
-  'GMD',
-  'pvclust',
-  'reshape2',
-  'pander',
-  'matrixcalc'
-#  'scaleboot' 
-#  'biomaRt'
-  ) 
-
-new.packages <-
-  packages[!(packages %in% installed.packages())] 
-  # installed.packages() returns installed packages 
-
-if(length(new.packages) > 0){ 
-  install.packages(new.packages, repos='http://cran.us.r-project.org')
-}
-require('plyr')  # progress bar
-require('dplyr') # progress bar
-require('tidyr')
-require('xlsx')
-require('ggplot2')
-require('gplots')
-require('GMD')
-require('pvclust')
-require('reshape2')
-require('pander')
-require('matrixcalc')
-
-#if( !("biomaRt" %in% installed.packages()) ){
-#  source('http://bioconductor.org/biocLite.R')
-#  biocLite( 'biomaRt' )
-#  require( 'biomaRt' )
-#}else  require( 'biomaRt' )
-
-if( !("scaleboot" %in% installed.packages()) ){
-  install.packages(
-    sprintf(fmt = '%s%s',
-            pkgsDirectry,
-            "scaleboot_0.3-3.tar.gz"  
-            # ver. 16-May-2010 16:21
-            # https://cran.r-project.org/src/contrib/Archive/scaleboot/
-            ),
-    repos = NULL, type = "source")
-  require( 'scaleboot' )
-}else require( 'scaleboot' )
-
+source(file=sprintf('%s/%s',funcDirectry,'require_packages_25NOV17.R'))
+detach("package:biomaRt", unload=TRUE)
 #```
 
 
@@ -265,13 +207,13 @@ ftable.delay <- data.frame(
   )
 print(max(ftable.delay$Freq))
 by_y.ax.break <- ifelse(
-  round(max(ftable.delay$Freq)/10,-2)==0,
+  round(max(ftable.delay$Freq)/10,-1)==0,
   2,#1,
-  round(max(ftable.delay$Freq)/10,-2)
+  round(max(ftable.delay$Freq)/10,0)
   )
 y.ax.break <- seq(
   0,
-  18,#max(ftable.delay$Freq),
+  max(ftable.delay$Freq),
   by_y.ax.break
   )
 
@@ -293,8 +235,8 @@ plot.type2 <- annotate(
   x=ftable.delay$delay, 
   y=ftable.delay$Freq+y.ax.break[2]/2, 
   fontface="italic") 
-plot.labs <- labs(x='Time-lag',y='Number of genes')
-plot.y.axe <- scale_y_continuous(breaks=y.ax.break,limits=c(0,18))
+plot.labs <- labs(x='Timelag',y='Number of genes')
+plot.y.axe <- scale_y_continuous(breaks=y.ax.break,limits=c(0,max(ftable.delay$Freq)))
 plot.x.axe <- scale_x_continuous(breaks=ftable.delay$delay)
 plot.axe.text <- theme(
   axis.text.x = element_text(size=25),
@@ -523,10 +465,40 @@ if(score4HCA != 'noHCA'){
       filter(delay %in% filter.delay)
     }
 
+dataPath_1     <- 'HighAUcluster_20171208.csv' # same definition as 'biomaRt_query_for_...'
+
+if(score4HCA != 'noHCA'){
+  HighAUcluster <- picked_genes
+  write.csv(
+    HighAUcluster,
+    sprintf(
+      '%s/%s', 
+      dataDirectry,
+      dataPath_1
+      )
+    )
+}
+
 
 #```
 
 #```{r selecting genes using picked.genes data}
+
+picked_genes <- read.csv(
+  sprintf(
+    '%s/%s', 
+    dataDirectry,
+    dataPath_1
+    )
+  )
+
+source(
+  sprintf(
+    '%s/%s',
+    funcDirectry,
+    '_Cheng_Vogel_biomaRt_query_for_20171125_output.R'
+    )
+  )
 
 inputName_to_outputName <- picked_genes %>%
   inner_join(
@@ -537,7 +509,7 @@ inputName_to_outputName <- picked_genes %>%
               )
       )
     ) %>%
-  dplyr::rename(accession=uniid)
+  dplyr::rename(accession=external_gene_name.x)
 
 edge_to_inputName_to_outputName = picked_genes %>%
   full_join(inputName_to_outputName)
@@ -546,7 +518,7 @@ sum(is.na(edge_to_inputName_to_outputName))
 sum(duplicated(edge_to_inputName_to_outputName$id))
 
 pander(edge_to_inputName_to_outputName)
-write.csv2(
+write.csv(
   edge_to_inputName_to_outputName,
   sprintf(
     '%s%s_%s_%s_%s_nboot%s_sb%s.csv',
@@ -625,6 +597,7 @@ if(rho.interTemporal==TRUE){
       var.trc = var.prt + delay
     )
   }else{
+    
     edge.dataGQ <-
       inner_join(
         data_ana %>%
@@ -634,6 +607,7 @@ if(rho.interTemporal==TRUE){
         edge_to_inputName_to_outputName,
         by='id'
         )
+    
     annMstLong <- edge.dataGQ %>%
       gather(var,val,one_of(cols)) %>%
       spread(dtname,val) %>%
@@ -650,7 +624,8 @@ if(rho.interTemporal==TRUE){
           ), 
         var.trc = var.prt + delay,
         prt.norm=scale(prt,center=TRUE,scale=TRUE),
-        trc.norm=scale(trc,center=TRUE,scale=TRUE)
+        trc.norm=scale(trc,center=TRUE,scale=TRUE),
+        var     =factor(var, cols)
         )%>%
       ungroup()
     attributes(annMstLong$prt.norm) <-NULL
@@ -836,12 +811,25 @@ pdf(
         data_ana_norm %>% 
           filter(dtname=='trc') %>% rename(trc=val),
         by=c('id','var')
-        ) %>% 
+      ) %>% 
       mutate(
         delay='disabled',
         edges='All Genes',
-        var.new=factor(var),
-        accession='NA'),
+        var.new=factor(var)
+      ) %>%
+      
+      # --- added for _Cheng_Vogel_analysis --- #
+      
+      inner_join(
+        inputName_to_outputName  %>%
+          dplyr::select(id, accession),
+        by='id'
+      )  %>% 
+      dplyr::select(-id) %>%
+      dplyr::rename(id = accession)
+    
+     # ---------------------------------------- #
+    ,
     .(delay), 
     scat.plot) # ALL GENES (normalised in 'if(z_norm==TRUE){...}')
   
@@ -851,7 +839,12 @@ pdf(
       rename(prt=prt.norm,trc=trc.norm)%>%
       mutate(
         delay='disabled(genes selected as analyte)',
-        var.new=factor(var)),
+        var.new=factor(var))%>%
+      
+      # --- added for _Cheng_Vogel_analysis --- #
+      dplyr::select(-id) %>%
+      dplyr::rename(id = accession),
+    # ---------------------------------------- #
     .(delay), 
     scat.plot
     ) #
@@ -860,7 +853,12 @@ pdf(
     annMstLong %>%
       rename(raw.prt=prt,raw.trc=trc)%>%
       rename(prt=prt.norm,trc=trc.norm)%>%
-      mutate(delay='disabled',var.new=factor(var)),
+      mutate(delay='disabled',var.new=factor(var))%>%
+      
+      # --- added for _Cheng_Vogel_analysis --- #
+      dplyr::select(-id) %>%
+      dplyr::rename(id = accession),
+    # ---------------------------------------- #
     .(edges),
     scat.plot
     ) 
@@ -869,7 +867,12 @@ pdf(
     delayAnnMstLong %>%
       dplyr::rename(raw.prt=prt,raw.trc=trc)%>%
       dplyr::rename(prt=prt.norm,trc=trc.norm)%>%
-      mutate(var.new=factor(var.ori)),
+      mutate(var.new=factor(var.ori))%>%
+      
+      # --- added for _Cheng_Vogel_analysis --- #
+      dplyr::select(-id) %>%
+      dplyr::rename(id = accession),
+    # ---------------------------------------- #
       .(delay,edges), scat.plot)
   
 dev.off()
@@ -909,7 +912,7 @@ empi.rho_id_Shufle <- function(data){
       mstSfl <- ddply(
         data,.(id,dtname),
         varSfl,sfl=TRUE,startCol=3,endCol=length(mst))#,.progress='text')
-    } else {
+      } else {
         mstSfl <- data
     }
     if (rho.interTemporal==TRUE){
@@ -985,9 +988,17 @@ output.empi.rho <- ddply(edge.dataGQ %>%
                            data.frame() %>%
                            dplyr::select(-val)%>%
                            spread(key = var,value = norm) %>%
-                           dplyr::select(id,dtname,one_of(cols),edges,delay,accession),
+                           dplyr::select(
+                             id,
+                             dtname,
+                             one_of(cols),
+                             edges,
+                             delay,
+                             accession
+                             ),
                          .(delay,edges),
-                         empi.rho_id_Shufle) %>%
+                         empi.rho_id_Shufle
+                         ) %>%
   inner_join(df.genes,by=c('delay','edges')) %>%
   ddply(.(delay,edges),my.rank,'rho.est') %>%
   mutate(
@@ -1106,4 +1117,75 @@ perm.rho.histo <- dlply(
 dev.off() ## pdf(perm_null_rho_histo)
 
 #```
-
+read.csv(
+  sprintf(
+    '%s%s_%s_%s_%s_nboot%s_sb%s.csv',
+    outputDirectry.prefix,
+    outprefix,
+    bioproc,
+    uniProtAccess.csv.prefix,
+    score4HCA,
+    nboot,
+    sb.switch
+    ) 
+  ) %>%
+  inner_join(
+    read.csv(
+      file=sprintf(
+        '%s%s_%s_%s_%s_nboot%s_sb%s.csv',
+        outputDirectry.prefix,
+        outprefix,
+        bioproc,
+        permuted_Rho.csv.prefix,
+        score4HCA,
+        nboot,
+        sb.switch
+        )
+      ) %>%
+      dplyr::select(delay, edges, rho.est, q_value) %>%
+      mutate(
+        rho = round(
+          rho.est, 2),
+        q_value = ifelse(
+          q_value==0, 
+          format(round(0.0001,4),scientific=FALSE), 
+          format(round(q_value,4),scientific=FALSE)
+          )
+        )
+    ) %>%
+  mutate( 
+    analysis_res = paste( rho, '\r', '[', q_value, ']', sep=''),
+    description = sub(
+      ':',
+      ':\r',
+      description
+      )
+    ) %>%
+  mutate(
+    description = sub(
+      "\\[Source:",
+      "\r\\[Source:",
+      description
+      )
+    ) %>%
+  dplyr::select( id, edges, delay, accession, description, q_value, rho, analysis_res) %>%
+  write.csv(
+    sprintf(
+      '%s_Analyses_results_%s_%s_%s_%s_nboot%s_sb%s.csv',
+      outputDirectry.prefix,
+      outprefix,
+      bioproc,
+      uniProtAccess.csv.prefix,
+      score4HCA,
+      nboot,
+      sb.switch
+      )
+  )
+      
+save.image(
+  sprintf(
+    '%s_AnalysisResults_%s.RData',
+    outputDirectry.prefix,
+    outprefix
+    )
+  )

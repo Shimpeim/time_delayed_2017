@@ -1,0 +1,23 @@
+"","X","id","edges","delay","X.1","accession","external_gene_name.1","description","external_gene_name.y"
+"1",1,"ENSG00000124635",4,0,1,"HIST1H2BJ","HIST1H2BJ","HIST1H2BJ: 
+histone cluster 1, H2bj [Source:HGNC Symbol;Acc:4761]","HIST1H2BJ"
+"2",2,"ENSG00000136448",4,0,2,"NMT1","NMT1","NMT1: 
+N-myristoyltransferase 1 [Source:HGNC Symbol;Acc:7857]","NMT1"
+"3",3,"ENSG00000157916",12,0,3,"RER1","RER1","RER1: 
+retention in endoplasmic reticulum sorting receptor 1 [Source:HGNC Symbol;Acc:30309]","RER1"
+"4",4,"ENSG00000182481",12,0,4,"KPNA2","KPNA2","KPNA2: 
+karyopherin alpha 2 (RAG cohort 1, importin alpha 1) [Source:HGNC Symbol;Acc:6395]","KPNA2"
+"5",5,"ENSG00000099812",20,0,5,"MISP","MISP","MISP: 
+mitotic spindle positioning [Source:HGNC Symbol;Acc:27000]","MISP"
+"6",6,"ENSG00000111057",20,0,6,"KRT18","KRT18","KRT18: 
+keratin 18 [Source:HGNC Symbol;Acc:6430]","KRT18"
+"7",7,"ENSG00000128422",20,0,7,"KRT17","KRT17","KRT17: 
+keratin 17 [Source:HGNC Symbol;Acc:6427]","KRT17"
+"8",8,"ENSG00000100983",1,2,8,"GSS","GSS","GSS: 
+glutathione synthetase [Source:HGNC Symbol;Acc:4624]","GSS"
+"9",9,"ENSG00000175793",1,2,9,"SFN","SFN","SFN: 
+stratifin [Source:HGNC Symbol;Acc:10773]","SFN"
+"10",10,"ENSG00000111726",2,2,10,"CMAS","CMAS","CMAS: 
+cytidine monophosphate N-acetylneuraminic acid synthetase [Source:HGNC Symbol;Acc:18290]","CMAS"
+"11",11,"ENSG00000143870",2,2,11,"PDIA6","PDIA6","PDIA6: 
+protein disulfide isomerase family A, member 6 [Source:HGNC Symbol;Acc:30168]","PDIA6"
