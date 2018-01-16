@@ -1,6 +1,4 @@
-#R --vanilla --quiet < Morimoto_TDC.2016.main_20160819_args.R --args Selevsek_2015_all_Selevsek_20160706.RData             out.setting=F clustering=T ScaleBoot=F  lag.neg.ign=T  Selevsek_2015_id.convert_all.csv             > Selevsek_2015.all_Qian.log 2>&1 &
-#R --vanilla --quiet < Morimoto_TDC.2016.main_20160819_args.R --args Selevsek_2015_pentose_Selevsek_20160706.RData         out.setting=F clustering=F ScaleBoot=F  lag.neg.ign=T  Selevsek_2015_id.convert_pentose.csv         > Selevsek_2015.pentose_noHCA.log 2>&1 &
-#R --vanilla --quiet < Morimoto_TDC.2016.main_20160819_args.R --args Selevsek_2015_GlySerThrMetabo_Selevsek_20160706.RData out.setting=F clustering=F ScaleBoot=F  lag.neg.ign=T  Selevsek_2015_id.convert_GlySerThrMetabo.csv > Selevsek_2015.GlySerThrMetabo_noHCA.log 2>&1 &
+#R --vanilla --quiet < Morimoto_TDC.2016.Cheng_Vogel_20171125_args.R --args Cheng_Vogel_2016_rep_mean_all_Cheng_Vogel_rep_PC07_.RData             out.setting=F clustering=T ScaleBoot=F  lag.neg.ign=T  genename_protein_description.csv             > Selevsek_2015.all_Qian.log 2>&1 &
 
 # This source code is built under R ver.3.1.2
 
