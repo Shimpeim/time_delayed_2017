@@ -1,5 +1,5 @@
 ---
-title: "Application Qian 2001 method on Fournier2015 data (Z-normalized by genes)"
+title: 
 author: "s_morimoto"
 date: "2016/07/06"
 output: 
@@ -16,15 +16,13 @@ SETUP parameters
 ```{r setting up parameters}
 rm()
 
-##--- setting : data  ##
+##--- setting ---##
 dataDirectry   <- "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Data"
+outputDirectry <- 
+  "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Output"
 
 dataPath_trc     <- "Gene2011_testResult_ana_20160706.xlsx"
-                    #'Fournier_20151018_trc.xlsx'
-                    #"Gene2011_testResult_ana.xlsx" # 
 dataPath_prt     <- "ProtSWATH_testResult_ana_20160706.xlsx"
-                    #'Fournier_20151018_prt.xlsx'
-                    #"ProtSWATH_testResult_ana.xlsx" # 
 dataPath_pathway <- "2015_Selevsek_proteins_KEGG.xlsx" #  
 bioproc <- 'pentose' #'GlySerThrMetabo' #'pentose'# #NULL#
 
@@ -38,9 +36,9 @@ startRow_trc = 1
 startRow_prt = 1
 startRow_pw  = 1
 
-endRow_trc = 40027 #2296
-endRow_prt = 15535 #2296
-endRow_pw  = 54#54
+endRow_trc = 40027
+endRow_prt = 15535
+endRow_pw  = 54
 
 timePoint <- 5
 repet     <- 1
@@ -50,26 +48,17 @@ continuous_y_label <- c('0min is 1')
 
 
 cols <- c('0min','30min','60min','90min','120min')
-        #c('min0','min20','min40','min60','min120','min240','min360')
-        #c('T1-T1','T2-T1','T3-T1','T4-T1','T5-T1')
 
-## end of setting : data  ---##
 
 columnName <- c(rep(cols,repet))
 
-## --- setting : data processing before analysis #
 
 z_norm <- FALSE  ## Z-Normalize by genes and datanames ( TRUE/ FALSE)
 interTemporal <- FALSE
 
-## end of setting : data processing before analysis ---##
-
-## --- setting : filenames of the OUTPUT FILEs ##
-
 allOutput.prefix <- 'Selevsek_2015'
 
-outputDirectry <- 
-  "/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/Output"
+
 
 file_dataGQ.prefix         <- 'dataGQ_Selevsek_20160706'
 file_data_idConvert.prefix <- 'id.convert'
@@ -81,16 +70,6 @@ file_save.image     <- 'Selevsek_20160706.RData'
 
 ```{r BioMart setting}
 
- # Gene id convert (via bioMart)
-# 
-#bioMartDB      <- "fungi_mart_29" # 2015.10.28 DB update                                     # biomaRt::listMarts()
-#bioMartDataSet <- 'scerevisiae_eg_gene'                     
-#                                  # biomaRt::listDatasets(db)
-#inputName      <- 'wikigene_name'   # 'wikigene_name' or 'ensembl_gene_id' 
-#                                  # biomaRt::listFilters(sceg)
-#outputName     <- 'uniprot_swissprot_accession'
-#                                  # biomaRt::listFilters(sceg)
-
 bioMartHost    <- 'fungi.ensembl.org' # 2015.11.10 updated (HOST='biomart.org' has stopped)
 bioMartDB      <- "fungal_mart" # 2015.11.10 DB update    
                                   # biomaRt::listMarts(host=bioMartHost)
@@ -100,14 +79,6 @@ inputName_1      <-  'ensembl_gene_id' # 'wikigene_name' or 'ensembl_gene_id'
                                   # biomaRt::listFilters(sceg)
 outputName     <- 'uniprot_swissprot_accession'
                                   # biomaRt::listFilters(sceg)s
-
-```
-
-```{r functions sorce code file}
-
-funcDirectry <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Functions'
-
-EscoreCalc <- 'func_for_calcEscore_20160123.R'
 
 ```
 
@@ -186,22 +157,6 @@ makeDifData <- function(data,var){
   }
   return(data)
   }
-```
-
-
-Qian,Gerstein (J.Mol.Biol.,2001)
-```{r definition of FUNC gq_method}
-
-source(file = sprintf(fmt = '%s/%s',funcDirectry,EscoreCalc))
-
-##--- Example : function gq_method ##
-
-gq_method(c(0,0,0,0,1,1,1,-1,1,1,1,1),c(0,0,0,0,1,1,1,1,1,1,1,-1),4,3,'pos')
-
-gq_method(c(-1.597670,1.722744,1.699152,-2.219394,4.418399,2.081298,4.085573),
-          c(-5.823882,9.529135,-5.602938,2.634425,3.772645,-8.844689,-3.819055),7,1,'neg')
-
-## end of Example : function gq_method ---##
 ```
 
 
@@ -369,27 +324,6 @@ write.csv(id_convert %>%
                   file_data_idConvert.prefix,
                   bioproc)
           )
-```
-
-Qian,Gerstein (J.Mol.Biol.,2001)
-```{r }
-#gq_list_pos <- list()
-#for(i in 1:length(unique(dataGQ$id))){
-#  gene <- unique(dataGQ$id)[i]
-#  data <- dataGQ %>%
-#    filter(id==gene)
-#    if(nrow(data)>=2){
-#      gq_res <-  gq_method(data[1,3:length(data)],
-#                           data[2,3:length(data)],
-#                           timepoint=timePoint,
-#                           rep=repet,'pos')
-#      gq_list_i <- list()
-#      gq_list_i[[1]] <- data
-#      gq_list_i[[2]] <- gq_res
-#      gq_list_pos[[i]] <- gq_list_i
-#      }
-#  }
-#pander(gq_list_pos)
 ```
 
 ```{r saving RData file}
