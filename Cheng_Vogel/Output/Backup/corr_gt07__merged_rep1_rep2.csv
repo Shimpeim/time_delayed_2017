@@ -1,0 +1,170 @@
+,X.x,id,edges.x,delay.x,accession.x,description.x,q_value.x,rho.x,analysis_res.x,X.y,edges.y,delay.y,accession.y,description.y,q_value.y,rho.y,analysis_res.y
+1,1,ENSG00000103018,2,0,CYB5B,"CYB5B:
+ 
+cytochrome b5 type B (outer mitochondrial membrane) 
+[Source:HGNC Symbol;Acc:24374]",0.9716,0.07,"0.07
+[0.9716]",,,,,,,,
+2,2,ENSG00000104823,2,0,ECH1,"ECH1:
+ 
+enoyl CoA hydratase 1, peroxisomal 
+[Source:HGNC Symbol;Acc:3149]",0.9716,0.07,"0.07
+[0.9716]",,,,,,,,
+3,3,ENSG00000115541,2,0,HSPE1,"HSPE1:
+ 
+heat shock 10kDa protein 1 
+[Source:HGNC Symbol;Acc:5269]",0.9716,0.07,"0.07
+[0.9716]",,,,,,,,
+4,4,ENSG00000110711,3,0,AIP,"AIP:
+ 
+aryl hydrocarbon receptor interacting protein 
+[Source:HGNC Symbol;Acc:358]",1.00E-04,0.85,"0.85
+[0.0001]",,,,,,,,
+5,5,ENSG00000132589,3,0,FLOT2,"FLOT2:
+ 
+flotillin 2 
+[Source:HGNC Symbol;Acc:3758]",1.00E-04,0.85,"0.85
+[0.0001]",,,,,,,,
+6,6,ENSG00000170759,4,0,KIF5B,"KIF5B:
+ 
+kinesin family member 5B 
+[Source:HGNC Symbol;Acc:6324]",0.0029,0.64,"0.64
+[0.0029]",,,,,,,,
+7,7,ENSG00000197451,4,0,HNRNPAB,"HNRNPAB:
+ 
+heterogeneous nuclear ribonucleoprotein A/B 
+[Source:HGNC Symbol;Acc:5034]",0.0029,0.64,"0.64
+[0.0029]",,,,,,,,
+8,8,ENSG00000129559,5,0,NEDD8,"NEDD8:
+ 
+neural precursor cell expressed, developmentally down-regulated 8 
+[Source:HGNC Symbol;Acc:7732]",0.0195,0.69,"0.69
+[0.0195]",,,,,,,,
+9,9,ENSG00000189159,5,0,HN1,"HN1:
+ 
+hematological and neurological expressed 1 
+[Source:HGNC Symbol;Acc:14569]",0.0195,0.69,"0.69
+[0.0195]",,,,,,,,
+10,10,ENSG00000120948,10,0,TARDBP,"TARDBP:
+ 
+TAR DNA binding protein 
+[Source:HGNC Symbol;Acc:11571]",4.00E-04,0.71,"0.71
+[0.0004]",,,,,,,,
+11,11,ENSG00000205531,10,0,NAP1L4,"NAP1L4:
+ 
+nucleosome assembly protein 1-like 4 
+[Source:HGNC Symbol;Acc:7640]",4.00E-04,0.71,"0.71
+[0.0004]",,,,,,,,
+12,12,ENSG00000124299,17,0,PEPD,"PEPD:
+ 
+peptidase D 
+[Source:HGNC Symbol;Acc:8840]",0.1168,0.43,"0.43
+[0.1168]",,,,,,,,
+13,13,ENSG00000179409,17,0,GEMIN4,"GEMIN4:
+ 
+gem (nuclear organelle) associated protein 4 
+[Source:HGNC Symbol;Acc:15717]",0.1168,0.43,"0.43
+[0.1168]",,,,,,,,
+14,14,ENSG00000138107,1,1,ACTR1A,"ACTR1A:
+ 
+ARP1 actin-related protein 1 homolog A, centractin alpha (yeast) 
+[Source:HGNC Symbol;Acc:167]",7.00E-04,0.94,"0.94
+[0.0007]",,,,,,,,
+15,15,ENSG00000166794,1,1,PPIB,"PPIB:
+ 
+peptidylprolyl isomerase B (cyclophilin B) 
+[Source:HGNC Symbol;Acc:9255]",7.00E-04,0.94,"0.94
+[0.0007]",,,,,,,,
+16,16,ENSG00000077809,2,1,GTF2I,"GTF2I:
+ 
+general transcription factor IIi 
+[Source:HGNC Symbol;Acc:4659]",0.9716,-0.44,"-0.44
+[0.9716]",,,,,,,,
+17,17,ENSG00000137801,2,1,THBS1,"THBS1:
+ 
+thrombospondin 1 
+[Source:HGNC Symbol;Acc:11785]",0.9716,-0.44,"-0.44
+[0.9716]",,,,,,,,
+18,18,ENSG00000108848,3,1,LUC7L3,"LUC7L3:
+ 
+LUC7-like 3 (S. cerevisiae) 
+[Source:HGNC Symbol;Acc:24309]",0.1554,0.35,"0.35
+[0.1554]",,,,,,,,
+19,19,ENSG00000197747,3,1,S100A10,"S100A10:
+ 
+S100 calcium binding protein A10 
+[Source:HGNC Symbol;Acc:10487]",0.1554,0.35,"0.35
+[0.1554]",,,,,,,,
+20,20,ENSG00000113811,5,1,SELK,"SELK:
+ 
+Selenoprotein K  
+[Source:UniProtKB/Swiss-Prot;Acc:Q9Y6D0]",4.00E-04,0.87,"0.87
+[0.0004]",4,1,1,SELK,"SELK:
+ 
+Selenoprotein K  
+[Source:UniProtKB/Swiss-Prot;Acc:Q9Y6D0]",0.096,0.39,"0.39
+[0.0960]"
+21,21,ENSG00000168542,5,1,COL3A1,"COL3A1:
+ 
+collagen, type III, alpha 1 
+[Source:HGNC Symbol;Acc:2201]",4.00E-04,0.87,"0.87
+[0.0004]",,,,,,,,
+22,22,ENSG00000111237,9,1,VPS29,"VPS29:
+ 
+vacuolar protein sorting 29 homolog (S. cerevisiae) 
+[Source:HGNC Symbol;Acc:14340]",0.4364,0.11,"0.11
+[0.4364]",,,,,,,,
+23,23,ENSG00000166595,9,1,FAM96B,"FAM96B:
+ 
+family with sequence similarity 96, member B 
+[Source:HGNC Symbol;Acc:24261]",0.4364,0.11,"0.11
+[0.4364]",,,,,,,,
+24,24,ENSG00000143870,1,2,PDIA6,"PDIA6:
+ 
+protein disulfide isomerase family A, member 6 
+[Source:HGNC Symbol;Acc:30168]",1.00E-04,0.99,"0.99
+[0.0001]",,,,,,,,
+25,25,ENSG00000166598,1,2,HSP90B1,"HSP90B1:
+ 
+heat shock protein 90kDa beta (Grp94), member 1 
+[Source:HGNC Symbol;Acc:12028]",1.00E-04,0.99,"0.99
+[0.0001]",,,,,,,,
+26,,ENSG00000138448,,,,,,,,1,7,0,ITGAV,"ITGAV:
+ 
+integrin, alpha V 
+[Source:HGNC Symbol;Acc:6150]",8.00E-04,0.9,"0.9
+[0.0008]"
+27,,ENSG00000182481,,,,,,,,2,7,0,KPNA2,"KPNA2:
+ 
+karyopherin alpha 2 (RAG cohort 1, importin alpha 1) 
+[Source:HGNC Symbol;Acc:6395]",8.00E-04,0.9,"0.9
+[0.0008]"
+28,,ENSG00000101972,,,,,,,,3,1,1,STAG2,"STAG2:
+ 
+stromal antigen 2 
+[Source:HGNC Symbol;Acc:11355]",0.096,0.39,"0.39
+[0.0960]"
+29,,ENSG00000108588,,,,,,,,5,12,1,CCDC47,"CCDC47:
+ 
+coiled-coil domain containing 47 
+[Source:HGNC Symbol;Acc:24856]",0.0064,0.6,"0.6
+[0.0064]"
+30,,ENSG00000122565,,,,,,,,6,12,1,CBX3,"CBX3:
+ 
+chromobox homolog 3 
+[Source:HGNC Symbol;Acc:1553]",0.0064,0.6,"0.6
+[0.0064]"
+31,,ENSG00000163110,,,,,,,,7,12,1,PDLIM5,"PDLIM5:
+ 
+PDZ and LIM domain 5 
+[Source:HGNC Symbol;Acc:17468]",0.0064,0.6,"0.6
+[0.0064]"
+32,,ENSG00000115641,,,,,,,,8,4,2,FHL2,"FHL2:
+ 
+four and a half LIM domains 2 
+[Source:HGNC Symbol;Acc:3703]",0.0223,0.64,"0.64
+[0.0223]"
+33,,ENSG00000189091,,,,,,,,9,4,2,SF3B3,"SF3B3:
+ 
+splicing factor 3b, subunit 3, 130kDa 
+[Source:HGNC Symbol;Acc:10770]",0.0223,0.64,"0.64
+[0.0223]"
