@@ -36,6 +36,16 @@ dataGQ <- w.dataGQ[duplicated(w.dataGQ$id)|duplicated(w.dataGQ$id,fromLast=TRUE)
 #==== E-matrix ====#
 
 # Cluster ID#16
+a_e  <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YDR019C')) # =
+_e <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YGR205W')) # =
+_e <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YIL074C')) # =
+
+# Cluster ID#16
+VPS54_e  <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YDR027C')) # = VPS54
+RPL26A_e <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YLR344W')) # = RPL26A
+
+
+# Cluster ID#16
 VPS54_e  <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YDR027C')) # = VPS54
 RPL26A_e <- gq_scoreMatOut_withName(dataGQ %>% filter(id%in%'YLR344W')) # = RPL26A
 
