@@ -30,7 +30,7 @@ makedataData <- c_makedataData
 
 sampleSize <- as.numeric(c_sampleSize) # N of random sampled data for each rho 
 
-outprefix      <- sprintf('%s_permute_%s_%s','alpha_error_simulation_permtest_itt_',c_itt_of_permute,c_outdat_surfix)
+outprefix      <- sprintf('%s_permute_%s_%s','alpha_error_simulation_for_CV2016_permtest_itt_',c_itt_of_permute,c_outdat_surfix)
 bioproc        <- sprintf('%s','_MultValNorm_cov_')
 outputDirectry.prefix          <- './'
 #outputDirectry.prefix         <- '/Users/mos/Dropbox/Draft_201603Morimoto/Analysis/PG/Simulation/Permu.test/test/20160817'
